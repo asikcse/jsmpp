@@ -1,4 +1,4 @@
-#summary Getting know the background of jSMPP.
+#summary Getting knows the background of jSMPP.
 #labels introduction
 
 = Introduction (What is jSMPP?) =
@@ -12,4 +12,4 @@ The first point is I never use another SMPP API and the need *component* (interf
 
 = Why use jSMPP =
 
-First thing is as I explained above, jSMPP is component -> can be reused with minimal dependencies. The second thing is about complexity. When we handle with socket we should have a threading on our code, I want to minimize that. So the threading and socket complexity is wrapped on the API, we only have to understand the the API (and also the protocol).
+First thing is as I explained above, jSMPP is component -> can be reused with minimum dependencies. The second thing is about complexity. When we handle with socket we should have a threading on our code, I want to minimize that. So the threading and socket complexity is wrapped on the API, we only have to understand the the API (and also the protocol).
