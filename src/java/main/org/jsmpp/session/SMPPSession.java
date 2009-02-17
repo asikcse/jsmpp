@@ -124,6 +124,7 @@ public class SMPPSession extends AbstractSession implements ClientSession {
 	    super(pduSender);
 	    this.pduReader = pduReader;
 	    this.connFactory = connFactory;
+	    addSessionStateListener(new BoundSessionStateListener());
     }
 	
 	public SMPPSession(String host, int port, BindParameter bindParam,
@@ -329,7 +330,7 @@ public class SMPPSession extends AbstractSession implements ClientSession {
             RegisteredDelivery registeredDelivery,
             ReplaceIfPresentFlag replaceIfPresentFlag, DataCoding dataCoding,
             byte smDefaultMsgId, byte[] shortMessage,
-            OptionalParameter... optionalParameters) throws PDUException,
+            OptionalParameter[] optionalParameters) throws PDUException,
             ResponseTimeoutException, InvalidResponseException,
             NegativeResponseException, IOException {
         SubmitMultiCommandTask task = new SubmitMultiCommandTask(pduSender(),
@@ -425,7 +426,7 @@ public class SMPPSession extends AbstractSession implements ClientSession {
 	
 	@Override
 	protected GenericMessageReceiverListener messageReceiverListener() {
-	    return messageReceiverListener;
+	    return null;
 	}
 	
     private synchronized boolean isReadPdu() {

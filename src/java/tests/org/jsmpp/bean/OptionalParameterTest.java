@@ -71,10 +71,4 @@ public class OptionalParameterTest {
         }
         OptionalParameters.deserialize(tagCode, "Undefined tag".getBytes());
     }
-    
-    @Test
-    public void parsingMessagePayload() {
-        OptionalParameter optParam = OptionalParameters.deserialize(Tag.MESSAGE_PAYLOAD.code(), "hello".getBytes());
-        assertEquals(optParam.getClass(), OctetString.class);
-    }
 }

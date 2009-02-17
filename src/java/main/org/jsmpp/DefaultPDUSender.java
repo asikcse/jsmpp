@@ -198,7 +198,7 @@ public class DefaultPDUSender implements PDUSender {
                 destAddrTon.value(), destAddrNpi.value(), destinationAddr,
                 esmClass.value(), protocoId, priorityFlag,
                 scheduleDeliveryTime, validityPeriod, registeredDelivery
-                        .value(), replaceIfPresent, dataCoding.toByte(),
+                        .value(), replaceIfPresent, dataCoding.value(),
                 smDefaultMsgId, shortMessage, optionalParameters);
         writeAndFlush(os, b);
         return b;
@@ -275,7 +275,7 @@ public class DefaultPDUSender implements PDUSender {
                 sourceAddrTon.value(), sourceAddrNpi.value(), sourceAddr,
                 destAddrTon.value(), destAddrNpi.value(), destinationAddr,
                 esmClass.value(), protocoId, priorityFlag, registeredDelivery
-                        .value(), dataCoding.toByte(), shortMessage,
+                        .value(), dataCoding.value(), shortMessage,
                 optionalParameters);
         writeAndFlush(os, b);
         return b;
@@ -316,7 +316,7 @@ public class DefaultPDUSender implements PDUSender {
                 sourceAddrTon.value(), sourceAddrNpi.value(), sourceAddr,
                 destAddrTon.value(), destAddrNpi.value(), destinationAddr,
                 esmClass.value(), registeredDelivery.value(), dataCoding
-                        .toByte(), optionalParameters);
+                        .value(), optionalParameters);
         writeAndFlush(os, b);
         return b;
     }
@@ -387,7 +387,7 @@ public class DefaultPDUSender implements PDUSender {
                 destinationAddresses, esmClass.value(), protocolId,
                 priorityFlag, scheduleDeliveryTime, validityPeriod,
                 registeredDelivery.value(), replaceIfPresentFlag.value(),
-                dataCoding.toByte(), smDefaultMsgId, shortMessage,
+                dataCoding.value(), smDefaultMsgId, shortMessage,
                 optionalParameters);
         writeAndFlush(os, b);
         return b;

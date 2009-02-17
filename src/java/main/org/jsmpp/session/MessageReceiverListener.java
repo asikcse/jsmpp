@@ -32,7 +32,7 @@ import org.jsmpp.extra.ProcessRequestException;
  * @since 2.0
  * 
  */
-public interface MessageReceiverListener extends GenericMessageReceiverListener {
+public interface MessageReceiverListener {
 
     /**
      * This event raised when a short message received.

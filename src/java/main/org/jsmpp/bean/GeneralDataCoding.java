@@ -14,116 +14,81 @@
  */
 package org.jsmpp.bean;
 
-
 /**
- * This General Data Coding. 
+ * General Data Coding with coding group bits 7..4 -> 00xx
  * 
  * @author uudashr
- *
+ * @version 1.0
+ * 
  */
-public class GeneralDataCoding implements DataCoding {
-    public static final GeneralDataCoding DEFAULT = new GeneralDataCoding();
-    
-    private final boolean compressed;
-    private final Alphabet alphabet;
-    private final MessageClass messageClass;
-    
-    public GeneralDataCoding() {
-        this(Alphabet.ALPHA_DEFAULT);
-    }
-
-    public GeneralDataCoding(Alphabet alphabet) {
-        this(alphabet, null);
-    }
-    
-    public GeneralDataCoding(Alphabet alphabet, ESMClass esmClass) {
-        this(alphabet, null, false);
-    }
-
+public class GeneralDataCoding extends DataCoding1111 {
     /**
-     * Construct the GeneralDataCoding with specified alphabet, messageClass and
-     * compression flag.
-     * 
-     * @param alphabet is the alphabet.
-     * @param messageClass is the message class. This is nullable. If
-     *        <code>null</code> means the DataCoding doesn't has meaning
-     *        MessageClass.
-     * @param compressed is the compression flag. Value is
-     *        <code>true</tt> if the user message is compressed, otherwise set to <code>false</code>.
-     * 
-     * @throws IllegalArgumentException if the alphabet is <code>null</code>,
-     *         since Alphabet is mandatory.
+     * 11000000
      */
-    public GeneralDataCoding(Alphabet alphabet, MessageClass messageClass,
-            boolean compressed) throws IllegalArgumentException {
-        if (alphabet == null) {
-            throw new IllegalArgumentException("alphabet is mandatory, can't be null");
-        }
-        this.alphabet = alphabet;
-        this.messageClass = messageClass;
-        this.compressed = compressed;
+    private static final byte MASK_CODING_GROUP = (byte) 0xc0;
+    /**
+     * bin: 00100000
+     */
+    private static final byte MASK_COMPRESSED = 0x20;
+    /**
+     * bin: 00010000
+     */
+    private static final byte MASK_CONTAIN_MESSAGE_CLASS = 0x10;
+
+    public GeneralDataCoding() {
+        super();
+    }
+
+    public GeneralDataCoding(byte value) {
+        super(value);
+    }
+
+    public GeneralDataCoding(int value) {
+        super(value);
     }
     
-    public Alphabet getAlphabet() {
-        return alphabet;
-    }
-    
-    public MessageClass getMessageClass() {
-        return messageClass;
+    public GeneralDataCoding(boolean compressed, boolean containMessageClass,
+            MessageClass messageClass, Alphabet alphabet) {
+        super(alphabet, messageClass);
+        setCompressed(compressed);
+        setContainMessageClass(containMessageClass);
     }
     
     public boolean isCompressed() {
-        return compressed;
+        return (value & MASK_COMPRESSED) == MASK_COMPRESSED;
     }
-    
-    public byte toByte() {
-        byte value = compressed ? DataCodingFactory00xx.MASK_COMPRESSED : 0;
-        value |= alphabet.value();
-        if (messageClass != null) {
-            value |= DataCodingFactory00xx.MASK_CONTAIN_MESSAGE_CLASS;
-            value |= messageClass.value();
+
+    public void setCompressed(boolean compressed) {
+        if (compressed) {
+            value = (byte)(value | MASK_COMPRESSED);
+        } else {
+            value = (byte)(value & (MASK_COMPRESSED ^ 0xff));
         }
-        return value;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((alphabet == null) ? 0 : alphabet.hashCode());
-        result = prime * result + (compressed ? 1231 : 1237);
-        result = prime * result
-                + ((messageClass == null) ? 0 : messageClass.hashCode());
-        return result;
+    /**
+     * Indicate that the <tt>DataCoding</tt> have meaning message class
+     * 
+     * @return
+     */
+    public boolean isContainMessageClass() {
+        return (value & MASK_CONTAIN_MESSAGE_CLASS) == MASK_CONTAIN_MESSAGE_CLASS;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        GeneralDataCoding other = (GeneralDataCoding)obj;
-        if (alphabet == null) {
-            if (other.alphabet != null)
-                return false;
-        } else if (!alphabet.equals(other.alphabet))
-            return false;
-        if (compressed != other.compressed)
-            return false;
-        if (messageClass == null) {
-            if (other.messageClass != null)
-                return false;
-        } else if (!messageClass.equals(other.messageClass))
-            return false;
-        return true;
+    public void setContainMessageClass(boolean containMessageClass) {
+        if (containMessageClass) {
+            value = (byte)(value | MASK_CONTAIN_MESSAGE_CLASS);
+        } else {
+            value = (byte)(value & (MASK_CONTAIN_MESSAGE_CLASS ^ 0xff));
+        }
+    }
+
+    public static boolean isCompatible(byte dataCodingValue) {
+        return (dataCodingValue & MASK_CODING_GROUP) == 0x00;
     }
     
     @Override
     public String toString() {
-        return "DataCoding:" + (0xff & toByte());
+        return "GeneralDataCoding-" + value;
     }
 }

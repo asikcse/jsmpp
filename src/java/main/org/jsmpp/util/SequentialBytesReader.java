@@ -75,7 +75,7 @@ class SequentialBytesReader {
 
     public byte[] readBytes(int length) {
         if (length == 0)
-            return new byte[0];
+            return null;
         byte[] data = new byte[length];
         System.arraycopy(bytes, cursor, data, 0, length);
         cursor += length;
