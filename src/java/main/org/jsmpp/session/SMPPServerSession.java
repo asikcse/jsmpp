@@ -17,7 +17,6 @@ package org.jsmpp.session;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -112,10 +111,6 @@ public class SMPPServerSession extends AbstractSession implements ServerSession 
         sessionContext.open();
     }
     
-    public InetAddress getInetAddress() {
-        return connection().getInetAddress();
-    }
-    
     /**
      * Wait for bind request.
      * 
@@ -127,24 +122,19 @@ public class SMPPServerSession extends AbstractSession implements ServerSession 
      *         {@link SMPPServerSession} are no more valid because the
      *         connection will be close automatically.
      */
-    public BindRequest waitForBind(long timeout) throws IllegalStateException,
-            TimeoutException {
-        SessionState currentSessionState = getSessionState();
-        if (currentSessionState.equals(SessionState.OPEN)) {
+    public BindRequest waitForBind(long timeout) throws IllegalStateException, TimeoutException {
+        if (getSessionState().equals(SessionState.OPEN)) {
             new PDUReaderWorker().start();
             try {
                 return bindRequestReceiver.waitForRequest(timeout);
             } catch (IllegalStateException e) {
-                throw new IllegalStateException(
-                        "Invocation of waitForBind() has been made", e);
+                throw new IllegalStateException("Invocation of waitForBind() has been made", e);
             } catch (TimeoutException e) {
                 close();
                 throw e;
             }
         } else {
-            throw new IllegalStateException(
-                    "waitForBind() should be invoked on OPEN state, actual state is "
-                            + currentSessionState);
+            throw new IllegalStateException("waitForBind() should be invoked on OPEN state, actual state is " + SessionState.OPEN);
         }
     }
     
@@ -191,40 +181,28 @@ public class SMPPServerSession extends AbstractSession implements ServerSession 
         if (messageReceiverListener != null) {
             return messageReceiverListener.onAcceptSubmitSm(submitSm, this);
         }
-        String msg = "Receiving message but server hasn't " + ServerMessageReceiverListener.class + " yet";
-        logger.warn(msg);
-        System.err.println(msg);
-        throw new ProcessRequestException(msg, SMPPConstant.STAT_ESME_RX_R_APPN);
+        throw new ProcessRequestException("MessageReceveiverListener hasn't been set yet", SMPPConstant.STAT_ESME_RX_R_APPN);
     }
     
     private SubmitMultiResult fireAcceptSubmitMulti(SubmitMulti submitMulti) throws ProcessRequestException {
         if (messageReceiverListener != null) {
             return messageReceiverListener.onAcceptSubmitMulti(submitMulti, this);
         }
-        String msg = "Receiving message but server hasn't " + ServerMessageReceiverListener.class + " yet";
-        logger.warn(msg);
-        System.err.println(msg);
-        throw new ProcessRequestException(msg, SMPPConstant.STAT_ESME_RX_R_APPN);
+        throw new ProcessRequestException("MessageReceveiverListener hasn't been set yet", SMPPConstant.STAT_ESME_RX_R_APPN);
     }
     
     private QuerySmResult fireAcceptQuerySm(QuerySm querySm) throws ProcessRequestException {
         if (messageReceiverListener != null) {
             return messageReceiverListener.onAcceptQuerySm(querySm, this);
         }
-        String msg = "Receiving message but server hasn't " + ServerMessageReceiverListener.class + " yet";
-        logger.warn(msg);
-        System.err.println(msg);
-        throw new ProcessRequestException(msg, SMPPConstant.STAT_ESME_RX_R_APPN);
+        throw new ProcessRequestException("MessageReceveiverListener hasn't been set yet", SMPPConstant.STAT_ESME_RX_R_APPN);
     }
     
     private void fireAcceptReplaceSm(ReplaceSm replaceSm) throws ProcessRequestException {
         if (messageReceiverListener != null) {
             messageReceiverListener.onAcceptReplaceSm(replaceSm, this);
         } else {
-            String msg = "Receiving message but server hasn't " + ServerMessageReceiverListener.class + " yet";
-            logger.warn(msg);
-            System.err.println(msg);
-            throw new ProcessRequestException(msg, SMPPConstant.STAT_ESME_RX_R_APPN);
+            throw new ProcessRequestException("MessageReceveiverListener hasn't been set yet", SMPPConstant.STAT_ESME_RX_R_APPN);
         }
     }
     
@@ -232,10 +210,7 @@ public class SMPPServerSession extends AbstractSession implements ServerSession 
         if (messageReceiverListener != null) {
             messageReceiverListener.onAcceptCancelSm(cancelSm, this);
         } else {
-            String msg = "Receiving message but server hasn't " + ServerMessageReceiverListener.class + " yet";
-            logger.warn(msg);
-            System.err.println(msg);
-            throw new ProcessRequestException(msg, SMPPConstant.STAT_ESME_RX_R_APPN);
+            throw new ProcessRequestException("MessageReceveiverListener hasn't been set yet", SMPPConstant.STAT_ESME_RX_R_APPN);
         }
     }
     
@@ -340,13 +315,7 @@ public class SMPPServerSession extends AbstractSession implements ServerSession 
         
         public MessageId processSubmitSm(SubmitSm submitSm)
                 throws ProcessRequestException {
-            MessageId messageId = fireAcceptSubmitSm(submitSm);
-            if (messageId == null) {
-                String msg = "Invalid message_id, shouldn't null value. " + ServerMessageReceiverListener.class + "#onAcceptSubmitSm(SubmitSm) return null value";
-                System.err.println(msg);
-                throw new ProcessRequestException(msg, SMPPConstant.STAT_ESME_RX_R_APPN);
-            }
-            return messageId;
+            return fireAcceptSubmitSm(submitSm);
         }
         
         public void sendSubmitSmResponse(MessageId messageId, int sequenceNumber)

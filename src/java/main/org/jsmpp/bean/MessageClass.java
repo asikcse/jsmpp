@@ -44,14 +44,4 @@ public enum MessageClass {
         throw new IllegalArgumentException(
                 "No enum const MessageClass with value " + value);
     }
-    
-    public static MessageClass parseDataCoding(byte dataCoding) {
-        byte value = (byte)(dataCoding & MASK_MESSAGE_CLASS);
-        for (MessageClass val : values()) {
-            if (val.value == value)
-                return val;
-        }
-        throw new IllegalArgumentException(
-                "No enum const MessageClass with value " + value + " from dataCoding " + dataCoding);
-    }
 }
