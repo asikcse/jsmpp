@@ -124,6 +124,7 @@ public class SMPPSession extends AbstractSession implements ClientSession {
 	    super(pduSender);
 	    this.pduReader = pduReader;
 	    this.connFactory = connFactory;
+	    addSessionStateListener(new BoundSessionStateListener());
     }
 	
 	public SMPPSession(String host, int port, BindParameter bindParam,
@@ -309,8 +310,6 @@ public class SMPPSession extends AbstractSession implements ClientSession {
             ResponseTimeoutException, InvalidResponseException,
             NegativeResponseException, IOException {
     	
-        ensureTransmittable("submitShortMessage");
-    	
         SubmitSmCommandTask submitSmTask = new SubmitSmCommandTask(
                 pduSender(), serviceType, sourceAddrTon, sourceAddrNpi,
                 sourceAddr, destAddrTon, destAddrNpi, destinationAddr,
@@ -333,12 +332,9 @@ public class SMPPSession extends AbstractSession implements ClientSession {
             RegisteredDelivery registeredDelivery,
             ReplaceIfPresentFlag replaceIfPresentFlag, DataCoding dataCoding,
             byte smDefaultMsgId, byte[] shortMessage,
-            OptionalParameter... optionalParameters) throws PDUException,
+            OptionalParameter[] optionalParameters) throws PDUException,
             ResponseTimeoutException, InvalidResponseException,
             NegativeResponseException, IOException {
-        
-        ensureTransmittable("submitMultiple");
-        
         SubmitMultiCommandTask task = new SubmitMultiCommandTask(pduSender(),
                 serviceType, sourceAddrTon, sourceAddrNpi, sourceAddr,
                 destinationAddresses, esmClass, protocolId, priorityFlag,
@@ -360,12 +356,10 @@ public class SMPPSession extends AbstractSession implements ClientSession {
             TypeOfNumber sourceAddrTon, NumberingPlanIndicator sourceAddrNpi,
             String sourceAddr) throws PDUException, ResponseTimeoutException,
             InvalidResponseException, NegativeResponseException, IOException {
-        
-        ensureTransmittable("queryShortMessage");
-        
+
         QuerySmCommandTask task = new QuerySmCommandTask(pduSender(),
                 messageId, sourceAddrTon, sourceAddrNpi, sourceAddr);
-        
+
         QuerySmResp resp = (QuerySmResp)executeSendCommand(task,
                 getTransactionTimer());
 
@@ -389,9 +383,6 @@ public class SMPPSession extends AbstractSession implements ClientSession {
             byte smDefaultMsgId, byte[] shortMessage) throws PDUException,
             ResponseTimeoutException, InvalidResponseException,
             NegativeResponseException, IOException {
-        
-        ensureTransmittable("replaceShortMessage", true);
-        
         ReplaceSmCommandTask replaceSmTask = new ReplaceSmCommandTask(
                 pduSender(), messageId, sourceAddrTon, sourceAddrNpi,
                 sourceAddr, scheduleDeliveryTime, validityPeriod,
@@ -409,9 +400,6 @@ public class SMPPSession extends AbstractSession implements ClientSession {
             NumberingPlanIndicator destAddrNpi, String destinationAddress)
             throws PDUException, ResponseTimeoutException,
             InvalidResponseException, NegativeResponseException, IOException {
-        
-        ensureTransmittable("cancelShortMessage");
-        
         CancelSmCommandTask task = new CancelSmCommandTask(pduSender(),
                 serviceType, messageId, sourceAddrTon, sourceAddrNpi,
                 sourceAddr, destAddrTon, destAddrNpi, destinationAddress);
@@ -593,7 +581,9 @@ public class SMPPSession extends AbstractSession implements ClientSession {
 	     */
 	    private void notifyNoActivity() {
 	        logger.debug("No activity notified");
-	        enquireLinkSender.enquireLink();
+	        if (sessionContext().getSessionState().isBound()) {
+	            enquireLinkSender.enquireLink();
+	        }
 	    }
 	}
 	

@@ -63,11 +63,11 @@ public class MessageReceiverListenerImpl implements MessageReceiverListener {
         }
     }
     
-    public void onAcceptAlertNotification(AlertNotification alertNotification) {
-    }
-    
-    public DataSmResult onAcceptDataSm(DataSm dataSm, Session source)
-            throws ProcessRequestException {
+    public DataSmResult onAcceptDataSm(DataSm dataSm,
+            Session source) throws ProcessRequestException {
         return null;
+    };
+    
+    public void onAcceptAlertNotification(AlertNotification alertNotification) {
     }
 }
