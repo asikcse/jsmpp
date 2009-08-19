@@ -1,0 +1,44 @@
+Changes:
+
+2.0 beta 3
+
+- Add SMPP Server component
+- Add Optional Parameter support (contribution from mikko.koponen@gmail.com)
+- Handling PDU processing concurrently (performance improvement)
+- Add data_sm support
+- Add cancel_sm support
+- Add replace_sm support
+- Add alert_notification support
+- Add CapacityPolicy to PDUByteBuffer (performance improvement, minimize array 
+  of byte creation)
+  
+2.0 beta 4
+
+- Modify Optional Parameter API (currently for TLV related to message 
+  concatenation case)
+- Add ServerResponseDeliveryListener (listener to receive success or failure 
+  event of submit_sm_resp/submit_multi_resp delivery)
+- Change license from LGPL to "Apache License, Version 2.0"
+- Add license notice on every sources.
+
+2.0 beta 5
+- Bug fix for type on OptionalParameters class
+- Update the SessionState way to return the value from:
+  1. isBound()
+  2. isTransmittable()
+  3. isReceiveable()
+- Add examples for auto-reconnect gateway
+  it can be found on org.jsmpp.examples.gateway
+- Fix the destination addresses on SMPPSession#submitMultiple
+  Some classes and interfaces created to support the bug fixes.
+- Fix the date parsing on delivery receipt
+- Referring to Appendix C of SMPP 3.4 for year parsing rule
+
+2.0 beta 6
+- Change the max length of short message to 254, referring to SMPP 3.4
+  Previously using  255 (taken from SMPP 5.0)
+  
+2.1.0
+- set connection timeout when binding
+- provide source (the session) for onAcceptDataSm
+- use StrictBufferedInputStream
